@@ -12,6 +12,52 @@ use App\Controller\AppController;
  */
 class UsersController extends AppController
 {
+
+    public function beforeFilter(\Cake\Event\Event $event)
+    {
+        parent::beforeFilter($event);
+        $this->Auth->allow(['add']);
+    }
+
+    public function isAuthorized($user)
+    {
+        if(isset($user['role']) and $user['role'] === 'user')
+        {
+            if(in_array($this->request->action, ['home', 'view', 'logout']))
+            {
+                return true;
+            }
+        }
+
+        return parent::isAuthorized($user);
+    }
+
+    public function login()
+    {
+        if($this->request->is('post'))
+        {
+            $user = $this->Auth->identify();
+            if($user)
+            {
+                $this->Auth->setUser($user);
+                return $this->redirect($this->Auth->redirectUrl());
+            }
+            else
+            {
+                $this->Flash->error('Los datos son invalidos, por favor intente nuevamente', ['key' => 'auth']);
+            }
+        }
+    }
+
+    public function logout()
+    {
+        return $this->redirect($this->Auth->logout());
+    }
+
+    public function home()
+    {
+        $this->render();
+    }
     /**
      * Index method
      *
@@ -31,11 +77,12 @@ class UsersController extends AppController
      * @return \Cake\Http\Response|null
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function view($id = null)
+    public function view($id)
     {
-        $user = $this->Users->get($id, [
+        $user= $this->Users->get($id);
+        /*$user = $this->Users->get($id, [
             'contain' => ['Avances', 'Programas', 'Proyectos'],
-        ]);
+        ]);*/
 
         $this->set('user', $user);
     }

@@ -93,6 +93,11 @@ class UsersTable extends Table
             ->requirePresence('role', 'create')
             ->notEmptyString('role');
 
+        $validator
+            ->boolean('active')
+            ->requirePresence('active', 'create')
+            ->notEmptyString('active');
+
         return $validator;
     }
 
@@ -108,5 +113,14 @@ class UsersTable extends Table
         $rules->add($rules->isUnique(['email']));
 
         return $rules;
+    }
+
+    public function findAuth(\Cake\ORM\Query $query, array $options)
+    {
+        $query
+            ->select(['id', 'first_name', 'last_name', 'email', 'password', 'role'])
+            ->where(['Users.active' => 1]);
+
+        return $query;
     }
 }

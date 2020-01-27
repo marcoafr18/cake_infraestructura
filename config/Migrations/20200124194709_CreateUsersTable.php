@@ -18,6 +18,7 @@ class CreateUsersTable extends AbstractMigration
         $table->addColumn('email', 'string');
         $table->addColumn('password', 'string');
         $table->addColumn('role', 'enum', ['values' => 'admin, user']);
+        $table->addColumn('active', 'boolean');
         $table->addColumn('created', 'datetime', ['default' => null,'null' => false,]);
         $table->addColumn('modified', 'datetime', ['default' => null, 'null' => false,]);
         $table->create();
