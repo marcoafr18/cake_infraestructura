@@ -1,63 +1,38 @@
-<?php
-/**
- * @var \App\View\AppView $this
- * @var \App\Model\Entity\Avance[]|\Cake\Collection\CollectionInterface $avances
- */
-?>
-<nav class="large-3 medium-4 columns" id="actions-sidebar">
-    <ul class="side-nav">
-        <li class="heading"><?= __('Actions') ?></li>
-        <li><?= $this->Html->link(__('New Avance'), ['action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Proyectos'), ['controller' => 'Proyectos', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New Proyecto'), ['controller' => 'Proyectos', 'action' => 'add']) ?></li>
-        <li><?= $this->Html->link(__('List Users'), ['controller' => 'Users', 'action' => 'index']) ?></li>
-        <li><?= $this->Html->link(__('New User'), ['controller' => 'Users', 'action' => 'add']) ?></li>
-    </ul>
-</nav>
-<div class="avances index large-9 medium-8 columns content">
-    <h3><?= __('Avances') ?></h3>
-    <table cellpadding="0" cellspacing="0">
-        <thead>
-            <tr>
-                <th scope="col"><?= $this->Paginator->sort('id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('descripcion') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('imagen') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('imagen_dir') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('created') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('modified') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('proyecto_id') ?></th>
-                <th scope="col"><?= $this->Paginator->sort('user_id') ?></th>
-                <th scope="col" class="actions"><?= __('Actions') ?></th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($avances as $avance): ?>
-            <tr>
-                <td><?= $this->Number->format($avance->id) ?></td>
-                <td><?= h($avance->descripcion) ?></td>
-                <td><?= h($avance->imagen) ?></td>
-                <td><?= h($avance->imagen_dir) ?></td>
-                <td><?= h($avance->created) ?></td>
-                <td><?= h($avance->modified) ?></td>
-                <td><?= $avance->has('proyecto') ? $this->Html->link($avance->proyecto->id, ['controller' => 'Proyectos', 'action' => 'view', $avance->proyecto->id]) : '' ?></td>
-                <td><?= $avance->has('user') ? $this->Html->link($avance->user->id, ['controller' => 'Users', 'action' => 'view', $avance->user->id]) : '' ?></td>
-                <td class="actions">
-                    <?= $this->Html->link(__('View'), ['action' => 'view', $avance->id]) ?>
-                    <?= $this->Html->link(__('Edit'), ['action' => 'edit', $avance->id]) ?>
-                    <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $avance->id], ['confirm' => __('Are you sure you want to delete # {0}?', $avance->id)]) ?>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-    <div class="paginator">
-        <ul class="pagination">
-            <?= $this->Paginator->first('<< ' . __('first')) ?>
-            <?= $this->Paginator->prev('< ' . __('previous')) ?>
-            <?= $this->Paginator->numbers() ?>
-            <?= $this->Paginator->next(__('next') . ' >') ?>
-            <?= $this->Paginator->last(__('last') . ' >>') ?>
-        </ul>
-        <p><?= $this->Paginator->counter(['format' => __('Page {{page}} of {{pages}}, showing {{current}} record(s) out of {{count}} total')]) ?></p>
+<div class="row">
+    <div class="col-md-12">
+    	<div class="page-header">
+    		<h2>
+    			Mi lista
+    			<?= $this->Html->link('<span class="glyphicon glyphicon-plus"></span> Nuevo', ['controller' => 'Avances', 'action' => 'add'], ['class' => 'btn btn-primary pull-right', 'escape' => false]); ?>
+    		</h2>
+    	</div>
+		<ul class="list-group">
+			<?php foreach ($avances as $avance): ?>
+			<li class="list-group-item">
+				<h4 class="list-group-item-heading"><?= h($avance->descripcion) ?></h4>
+				<p>
+					<strong class="text-info">
+						<small>
+							<?= $this->Html->link($avance->imagen, null, ['target' => '_blank']) ?>
+						</small>
+					</strong>
+				</p>
+				<p class="list-group-item-text">
+					<?= h($avance->descripcion) ?>
+				</p>
+				<br>
+				<?= $this->Html->link('Editar', ['controller' => 'Bookmarks', 'action' => 'edit', $avance->id], ['class' => 'btn btn-sm btn-primary']) ?>
+				<?= $this->Form->postLink('Eliminar', ['controller' => 'Bookmarks', 'action' => 'delete', $avance->id], ['confirm' => 'Eliminar enlace ?', 'class' => 'btn btn-sm btn-danger']) ?>
+			</li>
+			<?php endforeach ?>
+		</ul>
+        <div class="paginator">
+            <ul class="pagination">
+                <?= $this->Paginator->prev('< Anterior') ?>
+                <?= $this->Paginator->numbers(['before' => '', 'after' => '']) ?>
+                <?= $this->Paginator->next('Siguiente >') ?>
+            </ul>
+            <p><?= $this->Paginator->counter() ?></p>
+        </div>
     </div>
 </div>

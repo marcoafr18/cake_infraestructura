@@ -17,7 +17,7 @@ class AvancesController extends AppController
     {
         if(isset($user['role']) and $user['role'] === 'user')
         {
-            if(in_array($this->request->action, ['add', 'view', 'edit', 'delete']))
+            if(in_array($this->request->action, ['add', 'index', 'edit', 'delete']))
             {
                 return true;
             }
@@ -41,21 +41,7 @@ class AvancesController extends AppController
         $this->set(compact('avances'));
     }
 
-    /**
-     * View method
-     *
-     * @param string|null $id Avance id.
-     * @return \Cake\Http\Response|null
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function view($id = null)
-    {
-        $avance = $this->Avances->get($id, [
-            'contain' => ['Proyectos', 'Users'],
-        ]);
 
-        $this->set('avance', $avance);
-    }
 
     /**
      * Add method
@@ -65,18 +51,20 @@ class AvancesController extends AppController
     public function add()
     {
         $avance = $this->Avances->newEntity();
-        if ($this->request->is('post')) {
+        if ($this->request->is('post'))
+        {
             $avance = $this->Avances->patchEntity($avance, $this->request->getData());
-            if ($this->Avances->save($avance)) {
-                $this->Flash->success(__('The avance has been saved.'));
+            $avance->user_id = $this->Auth->user('id');
+            if ($this->Avances->save($avance))
+            {
+                $this->Flash->success('El avance ha sido enviado');
 
                 return $this->redirect(['action' => 'index']);
             }
-            $this->Flash->error(__('The avance could not be saved. Please, try again.'));
+            $this->Flash->error('El avance no pudo ser enviado. Por favor, intente de nuevo');
         }
-        $proyectos = $this->Avances->Proyectos->find('list', ['limit' => 200]);
-        $users = $this->Avances->Users->find('list', ['limit' => 200]);
-        $this->set(compact('avance', 'proyectos', 'users'));
+        //$proyectos = $this->Avances->Proyectos->find('list', ['limit' => 200]);
+        $this->set(compact('avance'));
     }
 
     /**

@@ -4,7 +4,7 @@ use Cake\Auth\DefaultPasswordHasher;
 
 class CreateDataSeedMigration extends AbstractMigration
 {
-    
+
     public function up()
     {
         $faker = \Faker\Factory::create();
@@ -20,10 +20,7 @@ class CreateDataSeedMigration extends AbstractMigration
             'email' => function () use ($faker) {
                 return $faker->safeEmail();
             },
-            'password' => function() {
-                $hasher = new DefaultPasswordHasher();
-                return $hasher->hash('secret');
-            },
+            'password' => 'secret',
             'role' => 'user',
             'active' => function () {
                 return rand(0, 1);
