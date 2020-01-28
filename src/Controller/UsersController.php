@@ -47,6 +47,11 @@ class UsersController extends AppController
                 $this->Flash->error('Los datos son invalidos, por favor intente nuevamente', ['key' => 'auth']);
             }
         }
+
+        if($this->Auth->user())
+        {
+            return $this->redirect(['controller' =>'Users', 'action' => 'home']);
+        }
     }
 
     public function logout()
@@ -96,13 +101,14 @@ class UsersController extends AppController
     {
         $user = $this->Users->newEntity();
         if ($this->request->is('post')) {
-            $user = $this->Users->patchEntity($user, $this->request->getData());
+            //debug($this->request->data);
+            $user = $this->Users->patchEntity($user, $this->request->data);
             if ($this->Users->save($user)) {
-                $this->Flash->success(__('The user has been saved.'));
+                $this->Flash->success('El Usuario ha sido creado correctamente');
 
                 return $this->redirect(['action' => 'index']);
             }
-            $this->Flash->error(__('The user could not be saved. Please, try again.'));
+            $this->Flash->error('El usuario no pudo ser creado, por favor intente nuevamente');
         }
         $this->set(compact('user'));
     }
@@ -122,11 +128,11 @@ class UsersController extends AppController
         if ($this->request->is(['patch', 'post', 'put'])) {
             $user = $this->Users->patchEntity($user, $this->request->getData());
             if ($this->Users->save($user)) {
-                $this->Flash->success(__('The user has been saved.'));
+                $this->Flash->success('El usuario ha sido modificado.');
 
                 return $this->redirect(['action' => 'index']);
             }
-            $this->Flash->error(__('The user could not be saved. Please, try again.'));
+            $this->Flash->error('El usuario no pudo ser modificaco, por favor intente de nuevo.');
         }
         $this->set(compact('user'));
     }
@@ -143,9 +149,9 @@ class UsersController extends AppController
         $this->request->allowMethod(['post', 'delete']);
         $user = $this->Users->get($id);
         if ($this->Users->delete($user)) {
-            $this->Flash->success(__('The user has been deleted.'));
+            $this->Flash->success('El usuario ha sido eliminado.');
         } else {
-            $this->Flash->error(__('The user could not be deleted. Please, try again.'));
+            $this->Flash->error('El usuario no pudo ser eliminado, intente nuevamente por favor');
         }
 
         return $this->redirect(['action' => 'index']);

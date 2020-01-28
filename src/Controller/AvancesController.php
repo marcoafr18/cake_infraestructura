@@ -12,6 +12,20 @@ use App\Controller\AppController;
  */
 class AvancesController extends AppController
 {
+
+    public function isAuthorized($user)
+    {
+        if(isset($user['role']) and $user['role'] === 'user')
+        {
+            if(in_array($this->request->action, ['add', 'view', 'edit', 'delete']))
+            {
+                return true;
+            }
+        }
+
+        return parent::isAuthorized($user);
+    }
+
     /**
      * Index method
      *
@@ -20,7 +34,7 @@ class AvancesController extends AppController
     public function index()
     {
         $this->paginate = [
-            'contain' => ['Proyectos', 'Users'],
+            'conditions' => ['user_id' => $this->Auth->user('id')]
         ];
         $avances = $this->paginate($this->Avances);
 

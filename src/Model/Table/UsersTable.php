@@ -69,24 +69,25 @@ class UsersTable extends Table
             ->scalar('first_name')
             ->maxLength('first_name', 100)
             ->requirePresence('first_name', 'create')
-            ->notEmptyString('first_name');
+            ->notEmptyString('first_name', 'Rellene este campo');
 
         $validator
             ->scalar('last_name')
             ->maxLength('last_name', 100)
             ->requirePresence('last_name', 'create')
-            ->notEmptyString('last_name');
+            ->notEmptyString('last_name', 'Rellene este campo');
 
         $validator
+            ->add('email', 'valid', ['rule' => 'email', 'message' => 'Ingrese un correo electónico válido.'])
             ->email('email')
             ->requirePresence('email', 'create')
-            ->notEmptyString('email');
+            ->notEmptyString('email', 'Rellene este campo');
 
         $validator
             ->scalar('password')
             ->maxLength('password', 255)
             ->requirePresence('password', 'create')
-            ->notEmptyString('password');
+            ->notEmptyString('password', 'Rellene este campo', 'create');
 
         $validator
             ->scalar('role')
@@ -110,7 +111,7 @@ class UsersTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->isUnique(['email']));
+        $rules->add($rules->isUnique(['email'], 'Ya existe un usuario con este correo electrónico.'));
 
         return $rules;
     }
@@ -122,5 +123,20 @@ class UsersTable extends Table
             ->where(['Users.active' => 1]);
 
         return $query;
+    }
+
+    public function recoverPassword($id)
+    {
+        $user = $this->get($id);
+        return $user->password;
+    }
+
+    public function beforeDelete($event, $entity, $options)
+    {
+        if($entity->role == 'admin')
+        {
+            return false;
+        }
+        return true;
     }
 }
