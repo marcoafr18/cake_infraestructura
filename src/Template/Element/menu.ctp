@@ -14,7 +14,7 @@
             <?php if(isset($current_user)): ?>
                     <ul class="nav navbar-nav">
                         <li>
-                            <?= $this->Html->link('Avances', ['Controller' => 'Avances', 'action' => 'index']) ?>
+                            <?= $this->Html->link('Avances', ['controller' => 'Avances', 'action' => 'index']) ?>
                         </li>
                 <?php if($current_user['role'] == 'admin'): ?>
 

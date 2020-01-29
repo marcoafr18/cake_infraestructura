@@ -36,9 +36,9 @@ class Application extends BaseApplication
     {
         $this->addPlugin('Migrations');
 
-        $this->addPlugin('Josegonzalez/Upload');
+        //$this->addPlugin('Josegonzalez/Upload');
 
-        //$this->addPlugin('Proffer');
+        $this->addPlugin('Proffer');
 
         $this->addPlugin('BootstrapUI');
 

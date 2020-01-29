@@ -5,6 +5,8 @@ use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+//use Cake\Filesystem\Folder;
+//use Cake\Filesystem\File;
 
 /**
  * Avances Model
@@ -50,51 +52,17 @@ class AvancesTable extends Table
             'joinType' => 'INNER',
         ]);
 
-         $this->addBehavior('Josegonzalez/Upload.Upload', [
-            'imagen' => [
-                'fields' => [
-                    // if these fields or their defaults exist
-                    // the values will be set.
-                    'dir' => 'imagen_dir', // defaults to `dir`
-                    'size' => '1538347', // defaults to `size`
-                    'type' => 'jpg, png', // defaults to `type`
+        $this->addBehavior('Proffer.Proffer', [
+            'imagen' => [    // The name of your upload field
+                'root' => WWW_ROOT  . 'files', // Customise the root upload folder here, or leave blank to use the default
+                'dir' => 'imagen_dir',   // The name of the field to store the folder
+                'thumbnailSizes' => [
+                    'square' => ['w' => 200, 'h' => 200, 'crop' => true, 'jpeg_quality' => 100],   // Define the size and prefix of your thumbnails
+                    //'portrait' => ['w' => 100, 'h' => 300, 'crop' => true],     // Crop will crop the image as well as resize it
                 ],
-                'nameCallback' => function ($table, $entity, $data, $field, $settings) {
-                    return strtolower($data['name']);
-                },
-                'transformer' =>  function ($table, $entity, $data, $field, $settings) {
-                    $extension = pathinfo($data['name'], PATHINFO_EXTENSION);
-
-                    // Store the thumbnail in a temporary file
-                    $tmp = tempnam(sys_get_temp_dir(), 'upload') . '.' . $extension;
-
-                    // Use the Imagine library to DO THE THING
-                    $size = new \Imagine\Image\Box(40, 40);
-                    $mode = \Imagine\Image\ImageInterface::THUMBNAIL_INSET;
-                    $imagine = new \Imagine\Gd\Imagine();
-
-                    // Save that modified file to our temp file
-                    $imagine->open($data['tmp_name'])
-                        ->thumbnail($size, $mode)
-                        ->save($tmp);
-
-                    // Now return the original *and* the thumbnail
-                    return [
-                        $data['tmp_name'] => $data['name'],
-                        $tmp => 'thumbnail-' . $data['name'],
-                    ];
-                },
-                'deleteCallback' => function ($path, $entity, $field, $settings) {
-                    // When deleting the entity, both the original and the thumbnail will be removed
-                    // when keepFilesOnDelete is set to false
-                    return [
-                        $path . $entity->{$field},
-                        $path . 'thumbnail-' . $entity->{$field}
-                    ];
-                },
-                'keepFilesOnDelete' => false
+                'thumbnailMethod' => 'gd'  // Options are Imagick, Gd or Gmagick
             ]
-         ]);
+        ]);
     }
 
     /**
@@ -115,13 +83,34 @@ class AvancesTable extends Table
             ->requirePresence('descripcion', 'create')
             ->notEmptyString('descripcion');
 
-        /*$validator
-            ->scalar('imagen')
-            ->maxLength('imagen', 255)
+        $validator
+            ->provider('proffer', 'Proffer\Model\Validation\ProfferrRules')
+
+            //Set the thumnail resize dimensions
+            /*->add('imagen', 'proffer', [
+                'rule' => ['dimensions', [
+                    'min' => ['w' => 300, 'h' => 300],
+                    'max' => ['w' => 1500, 'h' => 1500]
+                ]],
+                'message' => 'La imagen no tiene correctas dimensiones.',
+                'provider' => 'proffer'
+            ])*/
+            ->add('imagen', 'extension', [
+                'rule' => ['extension', ['jpeg', 'png', 'jpg']],
+                'message' => 'La imagen no tiene una correcta estensión',
+            ])
+            ->add('imagen', 'fileSize', [
+                'rule' => ['fileSize', '<=', '1MB'],
+                'message' => 'La imagen no debe exceder de 1MB.',
+            ])
+            /*->add('imagen', 'mimeType', [
+                'rule' => ['mimeTipe', ['image/jpeg', 'image/png']],
+                'message' => 'La Imagen no tiene un correcto formato.'
+            ])*/
             ->requirePresence('imagen', 'create')
             ->notEmptyFile('imagen');
 
-        $validator
+        /*$validator
             ->scalar('imagen_dir')
             ->maxLength('imagen_dir', 255)
             ->requirePresence('imagen_dir', 'create')
