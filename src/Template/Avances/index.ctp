@@ -13,11 +13,13 @@
 				<p>
 					<strong class="text-info">
 						<small>
-							<?= $this->Html->link($avance->imagen, null, ['target' => '_blank']) ?>
+							<?= $this->Html->image('/files/avances/imagen/' . $avance->imagen_dir . '/square' . $avance->imagen, ['class' => 'img-resonsive img-thumbnail center-block'])?>
+
 						</small>
 					</strong>
 				</p>
 				<p class="list-group-item-text">
+					<?= $this->Html->link($avance->imagen, null, ['target' => '_blank']) ?>
 					<?= h($avance->descripcion) ?>
 				</p>
 				<br>
